@@ -1,11 +1,24 @@
-import { Image, Scroll, ScrollControls } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Image, Scroll, ScrollControls, useScroll } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useRef } from "react";
 import "./App.css";
 
 function Images() {
   const { width, height } = useThree((state) => state.viewport);
+  const group = useRef();
+  const data = useScroll();
+
+  useFrame(() => {
+    group.current.children[0].material.zoom = 1 + data.range(0, 1 / 3) / 3;
+    group.current.children[1].material.zoom = 1 + data.range(0, 1 / 3) / 3;
+    group.current.children[2].material.zoom =
+      1 + data.range(1.15 / 3, 1 / 3) / 3;
+    group.current.children[3].material.zoom =
+      1 + data.range(1.15 / 3, 1 / 3) / 3;
+  });
+
   return (
-    <group>
+    <group ref={group}>
       <Image
         url="./images/img1.jpg"
         scale={[4, height, 1]}
@@ -29,7 +42,7 @@ function Images() {
 function App() {
   return (
     <Canvas>
-      <ScrollControls pages={2} damping={3}>
+      <ScrollControls pages={2} damping={3} horizontal={false} infinite={false}>
         <Scroll>
           <Images />
         </Scroll>
